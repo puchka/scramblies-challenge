@@ -1,36 +1,31 @@
 # scramblies-challenge
 
-FIXME: description
+A project that test if a given string (str1) have a portion of characters that
+can be rearranged to match another string (str2).
 
 ## Installation
 
-Download from http://example.com/FIXME.
+    $ lein uberjar
 
 ## Usage
 
-FIXME: explanation
+    $ java -jar target/uberjar/scramblies-challenge-0.1.0-SNAPSHOT-standalone.jar
+    
+Then navigate to [http://localhost:3000](http://localhost:3000)
 
-    $ java -jar scramblies-challenge-0.1.0-standalone.jar [args]
+## Development mode
 
-## Options
+Run in 2 different terminals:
 
-FIXME: listing of options this app accepts.
+    $ lein run
 
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+and
+    
+    $ lein cljsbuild auto
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
