@@ -2,7 +2,9 @@
   (:require [ring.adapter.jetty :as jetty]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
-            [ring.util.http-response :refer :all])
+            [compojure.route :as route]
+            [ring.util.http-response :refer :all]
+            [scramblies-challenge.views.layout :as layout])
   (:gen-class))
 
 (s/defschema Data
@@ -20,12 +22,19 @@
   (every? #(>= (count-occurrence-char str1 %)
                (count-occurrence-char str2 %)) str2))
 
-(def app
+(defn scramble-api []
   (api
-    (POST "/api/scramble" []
-      :body [d Data]
-      :return Response
-      (ok {:scramblep (str (scramble? (:str1 d) (:str2 d)))}))))
+   (POST "/api/scramble" []
+         :body [d Data]
+         :return Response
+         (ok {:scramblep (str (scramble? (:str1 d) (:str2 d)))}))))
+
+(def app
+  (defroutes my-routes
+    (scramble-api)
+    (GET "/" req (layout/application))
+    (route/resources "/")
+    (route/not-found "404 Not Found")))
 
 (defn -main
   []
