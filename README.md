@@ -23,6 +23,10 @@ and
     
     $ lein cljsbuild auto
 
+## Running tests
+
+    $ lein test
+
 ## License
 
 Copyright © 2020
