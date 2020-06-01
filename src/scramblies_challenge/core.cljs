@@ -5,9 +5,13 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
+(defn- is-valid? [s]
+  (re-matches #"^[a-z]+$" s))
+
 (defonce app-state (atom {:query {:str1 ""
                                   :str2 ""}
-                          :result ""}))
+                          :result ""
+                          :valid false}))
 
 (defn- handler [evt]
   (.preventDefault evt)
@@ -15,7 +19,15 @@
                                     {:json-params (:query @app-state)}))]
         (if (= 200 (:status response))
           (swap! app-state assoc :result (:scramblep (:body response)))
-          (swap! app-state assoc :result  "Error")))))
+          (swap! app-state assoc :result  "An unexpected error occured.")))))
+
+(defn- change-handler [evt]
+  (let [name (get {"str1" :str1
+                   "str2" :str2} (-> evt .-target .-name))]
+    (swap! app-state assoc-in [:query name]
+           (-> evt .-target .-value))
+    (swap! app-state assoc :valid (and (is-valid? (get-in @app-state [:query :str1] ))
+                                       (is-valid? (get-in @app-state [:query :str2]))))))
 
 (defn scramble-form []
   [:div {:class "container"}
@@ -25,15 +37,18 @@
      [:label {:for "str1"} "Str1"]
      [:input {:type "text" :name "str1" :id "str1" :class "form-control"
               :value (get-in @app-state [:query :str1])
-              :on-change #(swap! app-state assoc-in [:query :str1] (-> % .-target .-value))}]]
+              :on-change change-handler}]]
     [:div {:class"form-group"}
      [:label {:for "str2"} "Str2"]
      [:input {:type "text" :name "str2" :id "str2" :class "form-control"
               :value (get-in @app-state [:query :str2])
-              :on-change #(swap! app-state assoc-in [:query :str2] (-> % .-target .-value))}]]
-    [:div [:input {:type "submit" :class "button" :value "Scramble"
-                   :id "scramble"
-                   :on-click handler}]]]
+              :on-change change-handler}]]
+    [:div {:class"form-group"}
+     [:input {:type "submit" :class "button" :cass "form-control"
+              :value "Scramble"
+              :id "scramble"
+              :on-click handler
+              :disabled (not (:valid @app-state))}]]]
    [:div {:class
           (if (= "" (:result @app-state))
             "hidden"
