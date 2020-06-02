@@ -5,8 +5,7 @@
   (html5 {:lang "en"}
          [:head
           [:title "Scramble"]
-          (include-css "//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")
-          (include-css "/css/design.css")]
+          (include-css "//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")]
 
          [:body
      

@@ -3,16 +3,17 @@
             [cljs-http.client :as http]
             [cljs.core.async :refer [go <!]]))
 
-;; define your app data so that it doesn't get over-written on reload
-
-(defn- is-valid? [s]
-  (re-matches #"^[a-z]+$" s))
-
+;; Application state
 (defonce app-state (atom {:query {:str1 ""
                                   :str2 ""}
                           :result ""
                           :valid false}))
 
+;; Test if an input is valid
+(defn- is-valid? [s]
+  (re-matches #"^[a-z]+$" s))
+
+;; Handler for click event on Scramble button
 (defn- handler [evt]
   (.preventDefault evt)
   (go (let [response (<! (http/post "/api/scramble"
@@ -21,6 +22,7 @@
           (swap! app-state assoc :result (:scramblep (:body response)))
           (swap! app-state assoc :result  "An unexpected error occured.")))))
 
+;; Handler for change event on inputs
 (defn- change-handler [evt]
   (let [name (get {"str1" :str1
                    "str2" :str2} (-> evt .-target .-name))]
@@ -29,6 +31,7 @@
     (swap! app-state assoc :valid (and (is-valid? (get-in @app-state [:query :str1] ))
                                        (is-valid? (get-in @app-state [:query :str2]))))))
 
+;; Scramble form
 (defn scramble-form []
   [:div {:class "container"}
    [:h1 {:class "mx-auto"} "Scramble"]
@@ -57,12 +60,13 @@
               "alert alert-danger"))}
     (:result @app-state)]])
 
+;; Renders the initial view
 (defn start []
   (reagent/render-component [scramble-form]
                             (. js/document (getElementById "app"))))
 
 (defn ^:export init []
   ;; init is called ONCE when the page loads
-  ;; this is called in the index.html and must be exported
+  ;; this is called in views/layout.clj and must be exported
   ;; so it is available even in :advanced release builds
   (start))
